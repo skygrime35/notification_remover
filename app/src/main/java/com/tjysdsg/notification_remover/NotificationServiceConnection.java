@@ -30,7 +30,7 @@ public class NotificationServiceConnection implements ServiceConnection {
     @Override
     public void onServiceDisconnected(ComponentName arg0) {
         Log.e(TAG, "onServiceDisconnected");
-        isConnected = true;
+        isConnected = false;
         owner.onNotificationListenerServiceStopped();
     }
 

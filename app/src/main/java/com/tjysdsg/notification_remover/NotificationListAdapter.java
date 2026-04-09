@@ -71,9 +71,11 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
             }
             appName.setText(appName_);
 
-            // title and description
-            title.setText(extras.getCharSequence(Notification.EXTRA_TITLE));
-            desc.setText(extras.getCharSequence(Notification.EXTRA_TEXT));
+            // title and description (may be null for redacted notifications on Android 15+)
+            CharSequence titleText = extras.getCharSequence(Notification.EXTRA_TITLE);
+            CharSequence descText = extras.getCharSequence(Notification.EXTRA_TEXT);
+            title.setText(titleText != null ? titleText : "");
+            desc.setText(descText != null ? descText : "");
         }
     }
 

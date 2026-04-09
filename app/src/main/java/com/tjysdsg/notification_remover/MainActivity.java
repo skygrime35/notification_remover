@@ -1,19 +1,19 @@
 package com.tjysdsg.notification_remover;
 
 import android.annotation.SuppressLint;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.divider.MaterialDividerItemDecoration;
 
 public class MainActivity extends NotificationListenerActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -29,6 +29,12 @@ public class MainActivity extends NotificationListenerActivity implements SwipeR
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         notificationServicePermissionBottomSheet = new BottomSheet();
         notificationServicePermissionBottomSheet.show(getSupportFragmentManager(), BottomSheet.TAG);

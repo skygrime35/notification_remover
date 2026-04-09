@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.content.ComponentName;
 import android.util.Log;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 abstract public class NotificationListenerActivity extends AppCompatActivity implements INotificationListenerOwner {
@@ -19,6 +20,7 @@ abstract public class NotificationListenerActivity extends AppCompatActivity imp
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
         notificationServiceConnection = new NotificationServiceConnection(this);
