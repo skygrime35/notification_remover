@@ -17,6 +17,7 @@ abstract public class NotificationListenerActivity extends AppCompatActivity imp
     private static final String ACTION_NOTIFICATION_LISTENER_SETTINGS = "android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS";
     Intent notificationListenerServiceIntent;
     NotificationServiceConnection notificationServiceConnection;
+    private boolean isBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ abstract public class NotificationListenerActivity extends AppCompatActivity imp
     public void startNotificationListenerService() {
         assert hasNotificationServicePermission();
 
-        if (notificationServiceConnection.isConnected()) return;
+        if (isBound) return;
 
         notificationListenerServiceIntent = new Intent(
                 this,
@@ -58,9 +59,16 @@ abstract public class NotificationListenerActivity extends AppCompatActivity imp
                 Context.BIND_AUTO_CREATE
         );
 
-        if (!res) {
-            // TODO: show error dialog
-            throw new RuntimeException("Failed to bindService");
+        if (res) {
+            isBound = true;
+        } else {
+            // Per Android docs, unbind even when bindService returns false to release the connection.
+            try {
+                unbindService(notificationServiceConnection);
+            } catch (IllegalArgumentException e) {
+                Log.e(getClass().getName(), "unbindService after failed bind: " + e.getMessage());
+            }
+            Log.e(getClass().getName(), "Failed to bindService");
         }
     }
 
@@ -68,8 +76,13 @@ abstract public class NotificationListenerActivity extends AppCompatActivity imp
      * Stop the notification service if it's running.
      */
     public void stopNotificationListenerService() {
-        if (notificationServiceConnection.isConnected()) {
-            unbindService(notificationServiceConnection);
+        if (isBound) {
+            isBound = false;
+            try {
+                unbindService(notificationServiceConnection);
+            } catch (IllegalArgumentException e) {
+                Log.e(getClass().getName(), "unbindService failed: " + e.getMessage());
+            }
 
             boolean stopped = stopService(notificationListenerServiceIntent);
             Log.e(getClass().getName(), "stopService returned " + stopped);
